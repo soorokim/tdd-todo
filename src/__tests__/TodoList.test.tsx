@@ -1,6 +1,6 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import { TodoProps } from "../types/TodoProps";
+import { render, screen } from "@testing-library/react";
 import TodoList from "../components/TodoList";
+import userEvent from "@testing-library/user-event";
 
 describe("<TodoList/>", () => {
   const sampleTodos = [
@@ -40,15 +40,18 @@ describe("<TodoList/>", () => {
     screen.getByText(sampleTodos[1].text);
   });
 
-  it("calls onRemove", () => {
+  it("calls onRemove", async () => {
+    const user = userEvent.setup();
     const { onRemove } = setup();
-    fireEvent.click(screen.getAllByText("삭제")[0]);
+
+    await user.click(screen.getAllByText("삭제")[0]);
     expect(onRemove).toBeCalledWith(sampleTodos[0].id);
   });
 
-  it("calls handleCheckBox", () => {
+  it("calls handleCheckBox", async () => {
+    const user = userEvent.setup();
     const { handleCheckBox } = setup();
-    fireEvent.click(screen.getByLabelText("TODO-TDD", { selector: "input" }));
+    await user.click(screen.getByLabelText("TODO-TDD", { selector: "input" }));
     expect(handleCheckBox).toBeCalledWith(
       sampleTodos[0].id,
       !sampleTodos[0].done

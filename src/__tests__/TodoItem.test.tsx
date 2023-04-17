@@ -1,6 +1,7 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { TodoProps } from "../types/TodoProps";
 import TodoItem from "../components/TodoItem";
+import userEvent from "@testing-library/user-event";
 
 describe("<TodoItem/>", () => {
   const sampleTodo: TodoProps["todo"] = {
@@ -43,18 +44,6 @@ describe("<TodoItem/>", () => {
     expect(button).toBeTruthy();
   });
 
-  // 오잉 그냥 되어버리넹
-  it("checkbox changes", () => {
-    const { input } = setup();
-    fireEvent.change(input, {
-      target: {
-        value: true,
-      },
-    });
-
-    expect(input).toHaveAttribute("value", "true");
-  });
-
   it("dose not show check and line-through when done is false", () => {
     const { input, label } = setup({ todo: { ...sampleTodo, done: false } });
 
@@ -69,15 +58,17 @@ describe("<TodoItem/>", () => {
     expect(label).toHaveStyle("text-decoration: line-through");
   });
 
-  it("calls onRemove", () => {
+  it("calls onRemove", async () => {
+    const user = userEvent.setup();
     const { button, onRemove } = setup();
-    fireEvent.click(button);
+    await user.click(button);
     expect(onRemove).toBeCalledWith(sampleTodo.id);
   });
 
-  it("calls handleCheckBox", () => {
+  it("calls handleCheckBox", async () => {
+    const user = userEvent.setup();
     const { input, handleCheckBox } = setup();
-    fireEvent.click(input);
+    await user.click(input);
     expect(handleCheckBox).toBeCalledWith(sampleTodo.id, !sampleTodo.done);
   });
 });

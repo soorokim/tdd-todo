@@ -1,5 +1,6 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import TodoForm from "../components/TodoForm";
+import userEvent from "@testing-library/user-event";
 
 const INPUT_TEST_VALUE = "TDD-TODO";
 
@@ -23,26 +24,24 @@ describe("<TodoForm/>", () => {
     expect(button).toBeInTheDocument();
   });
 
-  it("changes input", () => {
+  it("changes input", async () => {
+    const user = userEvent.setup();
     const { input } = setup();
-    fireEvent.change(input, {
-      target: {
-        value: INPUT_TEST_VALUE,
-      },
-    });
+    await user.click(input);
+    await user.paste(INPUT_TEST_VALUE);
+
     expect(input).toHaveAttribute("value", INPUT_TEST_VALUE);
   });
 
-  it("calls onInsert and clears input", () => {
+  it("calls onInsert and clears input", async () => {
+    const user = userEvent.setup();
     const { input, button, onInsert } = setup();
-    fireEvent.change(input, {
-      target: {
-        value: INPUT_TEST_VALUE,
-      },
-    });
-    fireEvent.click(button);
-    expect(onInsert).toBeCalledWith(INPUT_TEST_VALUE);
 
+    await user.click(input);
+    await user.paste(INPUT_TEST_VALUE);
+    await userEvent.click(button);
+
+    expect(onInsert).toBeCalledWith(INPUT_TEST_VALUE);
     expect(input).toHaveAttribute("value", "");
   });
 });
