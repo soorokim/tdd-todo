@@ -9,6 +9,7 @@ const camelcase = require("camelcase");
 module.exports = {
   process(src, filename) {
     const assetFilename = JSON.stringify(path.basename(filename));
+    console.log(assetFilename);
 
     if (filename.match(/\.svg$/)) {
       // Based on how SVGR generates a component name:
@@ -17,7 +18,8 @@ module.exports = {
         pascalCase: true,
       });
       const componentName = `Svg${pascalCaseFilename}`;
-      return `const React = require('react');
+      return {
+        code: `const React = require('react');
       module.exports = {
         __esModule: true,
         default: ${assetFilename},
@@ -32,7 +34,8 @@ module.exports = {
             })
           };
         }),
-      };`;
+      };`,
+      };
     }
 
     return `module.exports = ${assetFilename};`;
